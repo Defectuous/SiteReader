@@ -85,8 +85,8 @@ function attachEventListeners() {
   elements.playBtn.addEventListener('click', () => sendCommand('PLAY_COMMAND'));
   elements.pauseBtn.addEventListener('click', () => sendCommand('PAUSE_COMMAND'));
   elements.stopBtn.addEventListener('click', () => sendCommand('STOP_COMMAND'));
-  elements.nextBtn.addEventListener('click', () => sendCommand('NEXT_CHAPTER'));
-  elements.prevBtn.addEventListener('click', () => sendCommand('PREV_CHAPTER'));
+  elements.nextBtn.addEventListener('click', navigateToNextChapter);
+  elements.prevBtn.addEventListener('click', navigateToPreviousChapter);
   elements.restartBtn.addEventListener('click', () => sendCommand('RESTART_COMMAND'));
   
   elements.logsBtn.addEventListener('click', openLogsViewer);
@@ -148,6 +148,60 @@ function loadInitialState() {
 }
 
 /**
+ * Navigate to next chapter URL if available
+ */
+function navigateToNextChapter() {
+  chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+    if (!tabs[0]) {
+      updateStatus('No active tab', 'error');
+      return;
+    }
+
+    chrome.tabs.sendMessage(tabs[0].id, { type: 'GET_NEXT_CHAPTER_LINK' }, (response) => {
+      if (chrome.runtime.lastError) {
+        logger.warn('Could not get next chapter link: ' + chrome.runtime.lastError.message);
+        updateStatus('Next chapter link not found', 'error');
+        return;
+      }
+
+      if (response && response.url) {
+        logger.info('Navigating to next chapter: ' + response.url);
+        chrome.tabs.update(tabs[0].id, { url: response.url });
+      } else {
+        updateStatus('No next chapter available', 'error');
+      }
+    });
+  });
+}
+
+/**
+ * Navigate to previous chapter URL if available
+ */
+function navigateToPreviousChapter() {
+  chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+    if (!tabs[0]) {
+      updateStatus('No active tab', 'error');
+      return;
+    }
+
+    chrome.tabs.sendMessage(tabs[0].id, { type: 'GET_PREV_CHAPTER_LINK' }, (response) => {
+      if (chrome.runtime.lastError) {
+        logger.warn('Could not get previous chapter link: ' + chrome.runtime.lastError.message);
+        updateStatus('Previous chapter link not found', 'error');
+        return;
+      }
+
+      if (response && response.url) {
+        logger.info('Navigating to previous chapter: ' + response.url);
+        chrome.tabs.update(tabs[0].id, { url: response.url });
+      } else {
+        updateStatus('No previous chapter available', 'error');
+      }
+    });
+  });
+}
+
+/**
  * Send command to content script
  */
 function sendCommand(command) {
@@ -198,18 +252,6 @@ function updateUIAfterCommand(command) {
       uiState.isPlaying = true;
       uiState.isPaused = false;
       updateStatus('Restarting...', 'playing');
-      break;
-    case 'NEXT_CHAPTER':
-      if (uiState.currentChapter < uiState.chapters.length - 1) {
-        uiState.currentChapter++;
-        updateStatus(`Chapter ${uiState.currentChapter + 1}`, 'idle');
-      }
-      break;
-    case 'PREV_CHAPTER':
-      if (uiState.currentChapter > 0) {
-        uiState.currentChapter--;
-        updateStatus(`Chapter ${uiState.currentChapter + 1}`, 'idle');
-      }
       break;
   }
   updateUI();

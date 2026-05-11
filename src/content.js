@@ -235,6 +235,12 @@ function handlePopupMessage(request, sender, sendResponse) {
     case 'GET_PAGE_TITLE':
       sendResponse({ title: getPageTitle() });
       break;
+    case 'GET_NEXT_CHAPTER_LINK':
+      sendResponse({ url: getNextChapterLink() });
+      break;
+    case 'GET_PREV_CHAPTER_LINK':
+      sendResponse({ url: getPreviousChapterLink() });
+      break;
     case 'PLAY_COMMAND':
       playAudio();
       sendResponse({ success: true, state: 'playing' });
@@ -250,14 +256,6 @@ function handlePopupMessage(request, sender, sendResponse) {
     case 'RESTART_COMMAND':
       restartAudio();
       sendResponse({ success: true, state: 'restarted' });
-      break;
-    case 'NEXT_CHAPTER':
-      nextChapter();
-      sendResponse({ success: true, chapter: pageState.currentChapterIndex });
-      break;
-    case 'PREV_CHAPTER':
-      previousChapter();
-      sendResponse({ success: true, chapter: pageState.currentChapterIndex });
       break;
     case 'GET_STATE':
       sendResponse({
@@ -446,6 +444,54 @@ function getPageTitle() {
   }
   
   return document.title || 'Unknown Page';
+}
+
+/**
+ * Find next chapter link on the page
+ */
+function getNextChapterLink() {
+  // Royal Road specific selectors
+  let link = document.querySelector('a[href*="/chapter/"]:has-text("Next Chapter")');
+  if (!link) {
+    link = document.querySelector('a.btn-primary:contains("Next")');
+  }
+  
+  // Generic selectors
+  if (!link) {
+    const allLinks = document.querySelectorAll('a');
+    for (const a of allLinks) {
+      const text = a.textContent.toLowerCase();
+      if (text.includes('next') && text.includes('chapter')) {
+        return a.href;
+      }
+    }
+  }
+  
+  return link ? link.href : null;
+}
+
+/**
+ * Find previous chapter link on the page
+ */
+function getPreviousChapterLink() {
+  // Royal Road specific selectors
+  let link = document.querySelector('a[href*="/chapter/"]:has-text("Previous Chapter")');
+  if (!link) {
+    link = document.querySelector('a.btn-primary:contains("Previous")');
+  }
+  
+  // Generic selectors
+  if (!link) {
+    const allLinks = document.querySelectorAll('a');
+    for (const a of allLinks) {
+      const text = a.textContent.toLowerCase();
+      if (text.includes('previous') && text.includes('chapter')) {
+        return a.href;
+      }
+    }
+  }
+  
+  return link ? link.href : null;
 }
 
 /**
