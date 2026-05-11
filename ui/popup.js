@@ -11,7 +11,6 @@ let uiState = {
   currentChapter: 0,
   isPlaying: false,
   isPaused: false,
-  speechRate: 1.0,
 };
 
 // DOM References
@@ -26,8 +25,6 @@ const elements = {
   chaptersContainer: document.getElementById('chaptersContainer'),
   status: document.getElementById('status'),
   statusIndicator: document.getElementById('statusIndicator'),
-  rateSlider: document.getElementById('rateSlider'),
-  rateValue: document.getElementById('rateValue'),
 };
 
 /**
@@ -91,14 +88,6 @@ function attachEventListeners() {
   });
   
   elements.logsBtn.addEventListener('click', openLogsViewer);
-  
-  // Settings controls
-  elements.rateSlider.addEventListener('input', (e) => {
-    uiState.speechRate = parseFloat(e.target.value);
-    elements.rateValue.textContent = uiState.speechRate.toFixed(1) + 'x';
-    saveSettings();
-    updateSpeechSettings();
-  });
 
   logger.info('Event listeners attached');
 }
@@ -259,50 +248,21 @@ function updateStatus(message, status) {
  * Update speech synthesis settings (for future use when we support multiple TTS engines)
  */
 function updateSpeechSettings() {
-  chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-    if (!tabs[0]) return;
-
-    chrome.tabs.sendMessage(tabs[0].id, {
-      type: 'UPDATE_SPEECH_SETTINGS',
-      payload: {
-        rate: uiState.speechRate,
-      }
-    }).catch(err => {
-      logger.debug('Could not update speech settings: ' + err.message);
-    });
-  });
+  // Speech settings no longer configurable
 }
 
 /**
  * Load settings from Chrome storage
  */
 function loadSettings() {
-  chrome.storage.local.get(['siteReaderSettings'], (result) => {
-    if (result.siteReaderSettings) {
-      const settings = result.siteReaderSettings;
-      
-      if (settings.speechRate) {
-        uiState.speechRate = settings.speechRate;
-        elements.rateSlider.value = settings.speechRate;
-        elements.rateValue.textContent = settings.speechRate.toFixed(1) + 'x';
-      }
-      
-      logger.info('Settings loaded from storage');
-    }
-  });
+  // Settings loading no longer needed
 }
 
 /**
  * Save settings to Chrome storage
  */
 function saveSettings() {
-  chrome.storage.local.set({
-    siteReaderSettings: {
-      speechRate: uiState.speechRate,
-    }
-  }, () => {
-    logger.info('Settings saved');
-  });
+  // Settings saving no longer needed
 }
 
 /**
