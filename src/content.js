@@ -447,6 +447,11 @@ function getPageTitle() {
   
   return document.title || 'Unknown Page';
 }
+
+/**
+ * Restore reading position from storage
+ */
+function restoreReadingPosition() {
   const url = window.location.href;
   chrome.runtime.sendMessage(
     { type: 'GET_READING_POSITION', url: url },
