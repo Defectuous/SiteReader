@@ -24,9 +24,6 @@ const elements = {
   restartBtn: document.getElementById('restartBtn'),
   logsBtn: document.getElementById('logsBtn'),
   pageTitle: document.getElementById('pageTitle'),
-  chapterTitle: document.getElementById('chapterTitle'),
-  chapterCount: document.getElementById('chapterCount'),
-  totalChapters: document.getElementById('totalChapters'),
   chaptersList: document.getElementById('chaptersList'),
   chaptersContainer: document.getElementById('chaptersContainer'),
   status: document.getElementById('status'),
@@ -217,18 +214,6 @@ function updateUIAfterCommand(command) {
  * Update UI elements
  */
 function updateUI() {
-  // Update chapter title
-  if (uiState.chapters.length > 0) {
-    const chapter = uiState.chapters[uiState.currentChapter];
-    elements.chapterTitle.textContent = chapter.title || `Chapter ${uiState.currentChapter + 1}`;
-  } else {
-    elements.chapterTitle.textContent = 'No chapters detected';
-  }
-
-  // Update chapter count
-  elements.chapterCount.textContent = uiState.currentChapter + 1;
-  elements.totalChapters.textContent = uiState.chapters.length;
-
   // Update chapters list
   updateChaptersList();
 
