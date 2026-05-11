@@ -21,8 +21,6 @@ const elements = {
   restartBtn: document.getElementById('restartBtn'),
   logsBtn: document.getElementById('logsBtn'),
   pageTitle: document.getElementById('pageTitle'),
-  chaptersList: document.getElementById('chaptersList'),
-  chaptersContainer: document.getElementById('chaptersContainer'),
   status: document.getElementById('status'),
   statusIndicator: document.getElementById('statusIndicator'),
 };
@@ -189,9 +187,6 @@ function updateUIAfterCommand(command) {
  * Update UI elements
  */
 function updateUI() {
-  // Update chapters list
-  updateChaptersList();
-
   logger.debug('UI updated', {
     chapter: uiState.currentChapter,
     total: uiState.chapters.length,
@@ -202,33 +197,6 @@ function updateUI() {
 /**
  * Update button states based on playback status
  */
-
-/**
- * Update chapters list
- */
-function updateChaptersList() {
-  if (uiState.chapters.length === 0) {
-    elements.chaptersContainer.style.display = 'none';
-    return;
-  }
-
-  elements.chaptersContainer.style.display = 'block';
-  elements.chaptersList.innerHTML = '';
-
-  uiState.chapters.forEach((chapter, index) => {
-    const item = document.createElement('div');
-    item.className = 'chapter-item' + (index === uiState.currentChapter ? ' active' : '');
-    item.textContent = `${index + 1}. ${chapter.title || `Chapter ${index + 1}`}`;
-    
-    item.addEventListener('click', () => {
-      uiState.currentChapter = index;
-      sendCommand('STOP_COMMAND');
-      updateUI();
-    });
-
-    elements.chaptersList.appendChild(item);
-  });
-}
 
 /**
  * Update status display

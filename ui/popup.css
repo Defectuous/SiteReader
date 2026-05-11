@@ -66,54 +66,6 @@ body {
   color: #999;
 }
 
-/* Chapters List */
-.chapters-section {
-  background: rgba(255, 255, 255, 0.85);
-  padding: 12px 16px;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
-  max-height: 150px;
-  overflow-y: auto;
-}
-
-.section-title {
-  font-size: 11px;
-  text-transform: uppercase;
-  color: #999;
-  margin-bottom: 8px;
-  font-weight: 700;
-  letter-spacing: 0.5px;
-}
-
-.chapters-list {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
-.chapter-item {
-  padding: 6px 10px;
-  border-radius: 4px;
-  font-size: 12px;
-  cursor: pointer;
-  background: #f5f5f5;
-  border: 1px solid transparent;
-  transition: all 0.2s ease;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.chapter-item:hover {
-  background: #efefef;
-  border-color: #667eea;
-}
-
-.chapter-item.active {
-  background: #667eea;
-  color: white;
-  font-weight: 600;
-}
-
 /* Controls */
 .controls {
   display: grid;
