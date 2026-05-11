@@ -21,8 +21,6 @@ const elements = {
   playBtn: document.getElementById('playBtn'),
   pauseBtn: document.getElementById('pauseBtn'),
   stopBtn: document.getElementById('stopBtn'),
-  nextBtn: document.getElementById('nextBtn'),
-  prevBtn: document.getElementById('prevBtn'),
   restartBtn: document.getElementById('restartBtn'),
   logsBtn: document.getElementById('logsBtn'),
   pageTitle: document.getElementById('pageTitle'),
@@ -96,8 +94,6 @@ function attachEventListeners() {
     logger.info('Stop button clicked');
     sendCommand('STOP_COMMAND');
   });
-  elements.nextBtn.addEventListener('click', navigateToNextChapter);
-  elements.prevBtn.addEventListener('click', navigateToPreviousChapter);
   elements.restartBtn.addEventListener('click', () => {
     logger.info('Restart button clicked');
     sendCommand('RESTART_COMMAND');
@@ -156,70 +152,6 @@ function loadInitialState() {
 
         updateUI();
         logger.info('Initial state loaded: ' + uiState.chapters.length + ' chapters');
-      }
-    });
-  });
-}
-
-/**
- * Navigate to next chapter URL if available
- */
-function navigateToNextChapter() {
-  logger.info('Next button clicked - requesting next chapter link');
-  chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-    if (!tabs[0]) {
-      logger.error('No active tab found');
-      updateStatus('No active tab', 'error');
-      return;
-    }
-
-    logger.info('Sending GET_NEXT_CHAPTER_LINK to tab ' + tabs[0].id);
-    chrome.tabs.sendMessage(tabs[0].id, { type: 'GET_NEXT_CHAPTER_LINK' }, (response) => {
-      if (chrome.runtime.lastError) {
-        logger.error('Chrome runtime error: ' + chrome.runtime.lastError.message);
-        updateStatus('Navigation error: ' + chrome.runtime.lastError.message, 'error');
-        return;
-      }
-
-      logger.info('Received response from content script: ' + JSON.stringify(response));
-      if (response && response.url) {
-        logger.info('Navigating to next chapter: ' + response.url);
-        chrome.tabs.update(tabs[0].id, { url: response.url });
-      } else {
-        logger.warn('No URL in response');
-        updateStatus('No next chapter available', 'error');
-      }
-    });
-  });
-}
-
-/**
- * Navigate to previous chapter URL if available
- */
-function navigateToPreviousChapter() {
-  logger.info('Previous button clicked - requesting previous chapter link');
-  chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-    if (!tabs[0]) {
-      logger.error('No active tab found');
-      updateStatus('No active tab', 'error');
-      return;
-    }
-
-    logger.info('Sending GET_PREV_CHAPTER_LINK to tab ' + tabs[0].id);
-    chrome.tabs.sendMessage(tabs[0].id, { type: 'GET_PREV_CHAPTER_LINK' }, (response) => {
-      if (chrome.runtime.lastError) {
-        logger.error('Chrome runtime error: ' + chrome.runtime.lastError.message);
-        updateStatus('Navigation error: ' + chrome.runtime.lastError.message, 'error');
-        return;
-      }
-
-      logger.info('Received response from content script: ' + JSON.stringify(response));
-      if (response && response.url) {
-        logger.info('Navigating to previous chapter: ' + response.url);
-        chrome.tabs.update(tabs[0].id, { url: response.url });
-      } else {
-        logger.warn('No URL in response');
-        updateStatus('No previous chapter available', 'error');
       }
     });
   });
@@ -297,9 +229,6 @@ function updateUI() {
   elements.chapterCount.textContent = uiState.currentChapter + 1;
   elements.totalChapters.textContent = uiState.chapters.length;
 
-  // Update button states
-  updateButtonStates();
-
   // Update chapters list
   updateChaptersList();
 
@@ -313,27 +242,6 @@ function updateUI() {
 /**
  * Update button states based on playback status
  */
-function updateButtonStates() {
-  // Enable/disable navigation buttons
-  elements.prevBtn.disabled = uiState.currentChapter === 0;
-  elements.nextBtn.disabled = uiState.currentChapter === uiState.chapters.length - 1;
-
-  // Update button visual states
-  if (uiState.isPlaying && !uiState.isPaused) {
-    elements.playBtn.style.opacity = '0.5';
-    elements.pauseBtn.style.opacity = '1';
-  } else {
-    elements.playBtn.style.opacity = '1';
-    elements.pauseBtn.style.opacity = '0.5';
-  }
-
-  // Disable play if no chapters
-  elements.playBtn.disabled = uiState.chapters.length === 0;
-  elements.nextBtn.disabled = uiState.chapters.length === 0 || uiState.currentChapter >= uiState.chapters.length - 1;
-  elements.prevBtn.disabled = uiState.chapters.length === 0 || uiState.currentChapter === 0;
-  elements.restartBtn.disabled = uiState.chapters.length === 0;
-  elements.stopBtn.disabled = !uiState.isPlaying;
-}
 
 /**
  * Update chapters list
