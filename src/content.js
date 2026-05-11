@@ -433,6 +433,60 @@ function previousChapter() {
 }
 
 /**
+ * Detect current page theme (light or dark)
+ */
+function detectPageTheme() {
+  // Check if body has dark class
+  if (document.body.classList.contains('dark')) {
+    return 'dark';
+  }
+  if (document.body.classList.contains('light')) {
+    return 'light';
+  }
+  
+  // Check HTML element classes
+  if (document.documentElement.classList.contains('dark')) {
+    return 'dark';
+  }
+  if (document.documentElement.classList.contains('light')) {
+    return 'light';
+  }
+  
+  // Check data-theme attribute
+  const dataTheme = document.documentElement.getAttribute('data-theme') || 
+                    document.body.getAttribute('data-theme');
+  if (dataTheme === 'dark' || dataTheme === 'light') {
+    return dataTheme;
+  }
+  
+  // Check for Royal Road theme selector in localStorage
+  try {
+    const storedTheme = localStorage.getItem('theme');
+    if (storedTheme === 'dark' || storedTheme === 'light') {
+      return storedTheme;
+    }
+  } catch (e) {
+    logger.debug('Could not read theme from localStorage');
+  }
+  
+  // Check CSS computed background color (heuristic)
+  const bodyStyle = window.getComputedStyle(document.body);
+  const bgColor = bodyStyle.backgroundColor;
+  
+  // Parse RGB values
+  const rgb = bgColor.match(/\d+/g);
+  if (rgb && rgb.length >= 3) {
+    const [r, g, b] = rgb.map(Number);
+    // If average is less than 128, it's likely dark
+    const brightness = (r + g + b) / 3;
+    return brightness < 128 ? 'dark' : 'light';
+  }
+  
+  // Default to light
+  return 'light';
+}
+
+/**
  * Update popup UI with current state
  */
 function updatePopupUI() {
@@ -443,6 +497,7 @@ function updatePopupUI() {
       currentChapter: pageState.currentChapterIndex,
       isPlaying: pageState.isPlaying,
       isPaused: pageState.isPaused,
+      theme: detectPageTheme(),
     },
   }).catch(err => {
     // Popup might not be open, that's OK

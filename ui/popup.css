@@ -16,6 +16,48 @@ body {
   padding: 0;
 }
 
+/* Light theme (default) */
+.popup-container.theme-light {
+  --bg-primary: rgba(255, 255, 255, 0.95);
+  --bg-secondary: rgba(255, 255, 255, 0.9);
+  --bg-tertiary: #f0f0f0;
+  --text-primary: #333;
+  --text-secondary: #999;
+  --border-color: rgba(0, 0, 0, 0.05);
+  --accent-color: #667eea;
+  --accent-hover: #5568d3;
+  --button-bg: #f0f0f0;
+  --button-hover: #efefef;
+}
+
+/* Dark theme */
+.popup-container.theme-dark {
+  --bg-primary: rgba(30, 30, 30, 0.98);
+  --bg-secondary: rgba(40, 40, 40, 0.95);
+  --bg-tertiary: #333;
+  --text-primary: #e0e0e0;
+  --text-secondary: #999;
+  --border-color: rgba(255, 255, 255, 0.1);
+  --accent-color: #667eea;
+  --accent-hover: #7f8ff0;
+  --button-bg: #333;
+  --button-hover: #444;
+}
+
+/* Default to light if no theme class */
+.popup-container {
+  --bg-primary: rgba(255, 255, 255, 0.95);
+  --bg-secondary: rgba(255, 255, 255, 0.9);
+  --bg-tertiary: #f0f0f0;
+  --text-primary: #333;
+  --text-secondary: #999;
+  --border-color: rgba(0, 0, 0, 0.05);
+  --accent-color: #667eea;
+  --accent-hover: #5568d3;
+  --button-bg: #f0f0f0;
+  --button-hover: #efefef;
+}
+
 .popup-container {
   display: flex;
   flex-direction: column;
@@ -25,55 +67,33 @@ body {
 
 /* Header */
 .popup-header {
-  background: rgba(255, 255, 255, 0.95);
+  background: var(--bg-primary);
   padding: 16px;
-  border-bottom: 2px solid #667eea;
+  border-bottom: 2px solid var(--accent-color);
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 .popup-header h1 {
   font-size: 24px;
-  color: #667eea;
+  color: var(--accent-color);
   margin-bottom: 4px;
   font-weight: 700;
 }
 
 .subtitle {
   font-size: 12px;
-  color: #999;
+  color: var(--text-secondary);
   font-weight: 500;
-}
-
-/* Chapter Info */
-.chapter-info {
-  background: rgba(255, 255, 255, 0.9);
-  padding: 12px 16px;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
-}
-
-.chapter-title {
-  font-size: 14px;
-  font-weight: 600;
-  color: #333;
-  margin-bottom: 8px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.chapter-progress {
-  font-size: 12px;
-  color: #999;
 }
 
 /* Controls */
 .controls {
   display: grid;
-  grid-template-columns: repeat(5, 1fr);
+  grid-template-columns: repeat(3, 1fr);
   gap: 8px;
   padding: 16px;
-  background: rgba(255, 255, 255, 0.9);
-  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+  background: var(--bg-secondary);
+  border-bottom: 1px solid var(--border-color);
 }
 
 .control-btn {
@@ -85,12 +105,12 @@ body {
   padding: 12px 8px;
   border: none;
   border-radius: 8px;
-  background: #f0f0f0;
+  background: var(--button-bg);
   cursor: pointer;
   transition: all 0.2s ease;
   font-size: 12px;
   font-weight: 600;
-  color: #333;
+  color: var(--text-primary);
 }
 
 .control-btn .icon {
@@ -103,7 +123,7 @@ body {
 }
 
 .control-btn:hover {
-  background: #e0e0e0;
+  background: var(--button-hover);
   transform: translateY(-2px);
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
@@ -113,12 +133,12 @@ body {
 }
 
 .control-btn.primary {
-  background: #667eea;
+  background: var(--accent-color);
   color: white;
 }
 
 .control-btn.primary:hover {
-  background: #5568d3;
+  background: var(--accent-hover);
   box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
 }
 
@@ -128,24 +148,24 @@ body {
   grid-template-columns: repeat(2, 1fr);
   gap: 8px;
   padding: 12px 16px;
-  background: rgba(255, 255, 255, 0.9);
-  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+  background: var(--bg-secondary);
+  border-bottom: 1px solid var(--border-color);
 }
 
 .secondary-btn {
   padding: 10px 12px;
   border: none;
   border-radius: 6px;
-  background: #f5f5f5;
+  background: var(--button-bg);
   cursor: pointer;
   font-size: 12px;
   font-weight: 600;
-  color: #333;
+  color: var(--text-primary);
   transition: all 0.2s ease;
 }
 
 .secondary-btn:hover {
-  background: #e0e0e0;
+  background: var(--button-hover);
   transform: translateY(-1px);
 }
 
@@ -159,14 +179,15 @@ body {
   align-items: center;
   justify-content: space-between;
   padding: 12px 16px;
-  background: rgba(255, 255, 255, 0.9);
-  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+  background: var(--bg-secondary);
+  border-bottom: 1px solid var(--border-color);
   font-size: 12px;
-  color: #666;
+  color: var(--text-secondary);
 }
 
 .status-label {
   font-weight: 600;
+  color: var(--text-primary);
 }
 
 .status-indicator {
@@ -211,7 +232,7 @@ body {
 /* Settings */
 .settings {
   padding: 16px;
-  background: rgba(255, 255, 255, 0.9);
+  background: var(--bg-secondary);
 }
 
 .setting-item {
@@ -226,7 +247,7 @@ body {
   display: block;
   font-size: 12px;
   font-weight: 600;
-  color: #333;
+  color: var(--text-primary);
   margin-bottom: 6px;
 }
 
@@ -240,7 +261,7 @@ body {
   flex: 1;
   height: 4px;
   border-radius: 2px;
-  background: #ddd;
+  background: var(--button-bg);
   outline: none;
   -webkit-appearance: none;
   appearance: none;
@@ -252,33 +273,33 @@ body {
   width: 14px;
   height: 14px;
   border-radius: 50%;
-  background: #667eea;
+  background: var(--accent-color);
   cursor: pointer;
   transition: background 0.2s;
 }
 
 .setting-item input[type="range"]::-webkit-slider-thumb:hover {
-  background: #5568d3;
+  background: var(--accent-hover);
 }
 
 .setting-item input[type="range"]::-moz-range-thumb {
   width: 14px;
   height: 14px;
   border-radius: 50%;
-  background: #667eea;
+  background: var(--accent-color);
   cursor: pointer;
   border: none;
   transition: background 0.2s;
 }
 
 .setting-item input[type="range"]::-moz-range-thumb:hover {
-  background: #5568d3;
+  background: var(--accent-hover);
 }
 
 .slider-value {
   font-size: 12px;
   font-weight: 600;
-  color: #667eea;
+  color: var(--accent-color);
   min-width: 35px;
   text-align: right;
 }
@@ -289,16 +310,16 @@ body {
 }
 
 ::-webkit-scrollbar-track {
-  background: rgba(0, 0, 0, 0.05);
+  background: var(--border-color);
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #ccc;
+  background: var(--button-bg);
   border-radius: 3px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #999;
+  background: var(--button-hover);
 }
 
 /* Responsive */

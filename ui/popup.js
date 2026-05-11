@@ -233,6 +233,26 @@ function loadSettings() {
 }
 
 /**
+ * Apply theme to popup (light or dark)
+ */
+function applyTheme(theme) {
+  const container = document.querySelector('.popup-container');
+  if (!container) return;
+  
+  logger.info('Applying theme: ' + theme);
+  
+  // Remove existing theme classes
+  container.classList.remove('theme-light', 'theme-dark');
+  
+  // Add new theme class
+  if (theme === 'dark') {
+    container.classList.add('theme-dark');
+  } else {
+    container.classList.add('theme-light');
+  }
+}
+
+/**
  * Save settings to Chrome storage
  */
 function saveSettings() {
@@ -263,6 +283,11 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     uiState.currentChapter = request.payload.currentChapter ?? uiState.currentChapter;
     uiState.isPlaying = request.payload.isPlaying ?? uiState.isPlaying;
     uiState.isPaused = request.payload.isPaused ?? uiState.isPaused;
+    
+    // Apply theme if provided
+    if (request.payload.theme) {
+      applyTheme(request.payload.theme);
+    }
     
     updateUI();
     
