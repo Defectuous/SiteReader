@@ -19,7 +19,7 @@ body {
 .popup-container {
   display: flex;
   flex-direction: column;
-  min-height: 380px;
+  min-height: 300px;
   width: 100%;
 }
 
