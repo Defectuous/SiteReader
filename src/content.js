@@ -450,8 +450,15 @@ function getPageTitle() {
  * Find next chapter link on the page
  */
 function getNextChapterLink() {
+  // Look for HTML link rel='next' tag (most reliable)
+  let link = document.querySelector('link[rel="next"]');
+  if (link && link.href) {
+    logger.info('Found next chapter via link[rel="next"]: ' + link.href);
+    return link.href;
+  }
+  
   // Royal Road specific selectors
-  let link = document.querySelector('a[href*="/chapter/"]:has-text("Next Chapter")');
+  link = document.querySelector('a[href*="/chapter/"]:has-text("Next Chapter")');
   if (!link) {
     link = document.querySelector('a.btn-primary:contains("Next")');
   }
@@ -462,11 +469,13 @@ function getNextChapterLink() {
     for (const a of allLinks) {
       const text = a.textContent.toLowerCase();
       if (text.includes('next') && text.includes('chapter')) {
+        logger.info('Found next chapter via text match');
         return a.href;
       }
     }
   }
   
+  logger.warn('No next chapter link found');
   return link ? link.href : null;
 }
 
@@ -474,8 +483,15 @@ function getNextChapterLink() {
  * Find previous chapter link on the page
  */
 function getPreviousChapterLink() {
+  // Look for HTML link rel='prev' tag (most reliable)
+  let link = document.querySelector('link[rel="prev"]');
+  if (link && link.href) {
+    logger.info('Found previous chapter via link[rel="prev"]: ' + link.href);
+    return link.href;
+  }
+  
   // Royal Road specific selectors
-  let link = document.querySelector('a[href*="/chapter/"]:has-text("Previous Chapter")');
+  link = document.querySelector('a[href*="/chapter/"]:has-text("Previous Chapter")');
   if (!link) {
     link = document.querySelector('a.btn-primary:contains("Previous")');
   }
@@ -486,11 +502,13 @@ function getPreviousChapterLink() {
     for (const a of allLinks) {
       const text = a.textContent.toLowerCase();
       if (text.includes('previous') && text.includes('chapter')) {
+        logger.info('Found previous chapter via text match');
         return a.href;
       }
     }
   }
   
+  logger.warn('No previous chapter link found');
   return link ? link.href : null;
 }
 
