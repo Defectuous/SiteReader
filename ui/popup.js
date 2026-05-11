@@ -127,23 +127,29 @@ function loadInitialState() {
  * Send command to content script
  */
 function sendCommand(command) {
+  logger.info('Attempting to send command: ' + command);
   chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
     if (!tabs[0]) {
+      logger.error('No active tab found for command: ' + command);
       updateStatus('No active tab', 'error');
       return;
     }
 
+    logger.info('Sending ' + command + ' to tab ' + tabs[0].id);
     chrome.tabs.sendMessage(tabs[0].id, { type: command }, (response) => {
       if (chrome.runtime.lastError) {
-        logger.error('Error sending command: ' + chrome.runtime.lastError.message);
-        updateStatus('Error: ' + chrome.runtime.lastError.message, 'error');
+        const errorMsg = chrome.runtime.lastError.message;
+        logger.error('Chrome runtime error sending ' + command + ': ' + errorMsg);
+        updateStatus('Error: ' + errorMsg, 'error');
         return;
       }
 
-      logger.info('Command sent: ' + command);
+      logger.info('Received response from content script for ' + command + ': ' + JSON.stringify(response));
       if (response && response.error) {
+        logger.error('Content script error for ' + command + ': ' + response.error);
         updateStatus('Error: ' + response.error, 'error');
       } else {
+        logger.info('Command ' + command + ' executed successfully');
         // Update UI based on command
         updateUIAfterCommand(command);
       }

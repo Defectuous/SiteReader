@@ -242,8 +242,14 @@ function handlePopupMessage(request, sender, sendResponse) {
       sendResponse({ url: getPreviousChapterLink() });
       break;
     case 'PLAY_COMMAND':
-      playAudio();
-      sendResponse({ success: true, state: 'playing' });
+      try {
+        logger.info('Play command received');
+        playAudio();
+        sendResponse({ success: true, state: 'playing' });
+      } catch (err) {
+        logger.error('Error during playAudio: ' + err.message);
+        sendResponse({ error: err.message });
+      }
       break;
     case 'PAUSE_COMMAND':
       pauseAudio();
@@ -277,16 +283,30 @@ function handlePopupMessage(request, sender, sendResponse) {
  * Play current chapter with Web Speech API
  */
 function playAudio() {
+  logger.info('playAudio() called');
+  
   if (pageState.chapters.length === 0) {
     logger.error('No chapters available to play');
-    return;
+    throw new Error('No chapters available');
+  }
+
+  logger.info('Chapters available: ' + pageState.chapters.length);
+  logger.info('Current chapter index: ' + pageState.currentChapterIndex);
+  
+  if (!window.speechSynthesis) {
+    logger.error('Web Speech API not available');
+    throw new Error('Speech synthesis not supported');
   }
 
   // Cancel any existing utterance
   speechSynthesis.cancel();
+  logger.info('Cancelled previous utterance');
 
   const chapter = pageState.chapters[pageState.currentChapterIndex];
   const text = chapter.text;
+  
+  logger.info('Creating utterance for chapter: ' + chapter.title);
+  logger.info('Text length: ' + text.length + ' characters');
 
   pageState.utterance = new SpeechSynthesisUtterance(text);
   pageState.utterance.rate = 1.0;
@@ -343,7 +363,9 @@ function playAudio() {
     chapterId: pageState.currentChapterIndex,
   });
 
+  logger.info('Calling speechSynthesis.speak()');
   speechSynthesis.speak(pageState.utterance);
+  logger.info('speechSynthesis.speak() called successfully');
 }
 
 /**
