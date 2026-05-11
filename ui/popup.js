@@ -82,12 +82,26 @@ function loadPageTitle() {
  * Attach event listeners to all controls
  */
 function attachEventListeners() {
-  elements.playBtn.addEventListener('click', () => sendCommand('PLAY_COMMAND'));
-  elements.pauseBtn.addEventListener('click', () => sendCommand('PAUSE_COMMAND'));
-  elements.stopBtn.addEventListener('click', () => sendCommand('STOP_COMMAND'));
+  logger.info('Attaching event listeners');
+  
+  elements.playBtn.addEventListener('click', () => {
+    logger.info('Play button clicked');
+    sendCommand('PLAY_COMMAND');
+  });
+  elements.pauseBtn.addEventListener('click', () => {
+    logger.info('Pause button clicked');
+    sendCommand('PAUSE_COMMAND');
+  });
+  elements.stopBtn.addEventListener('click', () => {
+    logger.info('Stop button clicked');
+    sendCommand('STOP_COMMAND');
+  });
   elements.nextBtn.addEventListener('click', navigateToNextChapter);
   elements.prevBtn.addEventListener('click', navigateToPreviousChapter);
-  elements.restartBtn.addEventListener('click', () => sendCommand('RESTART_COMMAND'));
+  elements.restartBtn.addEventListener('click', () => {
+    logger.info('Restart button clicked');
+    sendCommand('RESTART_COMMAND');
+  });
   
   elements.logsBtn.addEventListener('click', openLogsViewer);
   
@@ -151,23 +165,28 @@ function loadInitialState() {
  * Navigate to next chapter URL if available
  */
 function navigateToNextChapter() {
+  logger.info('Next button clicked - requesting next chapter link');
   chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
     if (!tabs[0]) {
+      logger.error('No active tab found');
       updateStatus('No active tab', 'error');
       return;
     }
 
+    logger.info('Sending GET_NEXT_CHAPTER_LINK to tab ' + tabs[0].id);
     chrome.tabs.sendMessage(tabs[0].id, { type: 'GET_NEXT_CHAPTER_LINK' }, (response) => {
       if (chrome.runtime.lastError) {
-        logger.warn('Could not get next chapter link: ' + chrome.runtime.lastError.message);
-        updateStatus('Next chapter link not found', 'error');
+        logger.error('Chrome runtime error: ' + chrome.runtime.lastError.message);
+        updateStatus('Navigation error: ' + chrome.runtime.lastError.message, 'error');
         return;
       }
 
+      logger.info('Received response from content script: ' + JSON.stringify(response));
       if (response && response.url) {
         logger.info('Navigating to next chapter: ' + response.url);
         chrome.tabs.update(tabs[0].id, { url: response.url });
       } else {
+        logger.warn('No URL in response');
         updateStatus('No next chapter available', 'error');
       }
     });
@@ -178,23 +197,28 @@ function navigateToNextChapter() {
  * Navigate to previous chapter URL if available
  */
 function navigateToPreviousChapter() {
+  logger.info('Previous button clicked - requesting previous chapter link');
   chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
     if (!tabs[0]) {
+      logger.error('No active tab found');
       updateStatus('No active tab', 'error');
       return;
     }
 
+    logger.info('Sending GET_PREV_CHAPTER_LINK to tab ' + tabs[0].id);
     chrome.tabs.sendMessage(tabs[0].id, { type: 'GET_PREV_CHAPTER_LINK' }, (response) => {
       if (chrome.runtime.lastError) {
-        logger.warn('Could not get previous chapter link: ' + chrome.runtime.lastError.message);
-        updateStatus('Previous chapter link not found', 'error');
+        logger.error('Chrome runtime error: ' + chrome.runtime.lastError.message);
+        updateStatus('Navigation error: ' + chrome.runtime.lastError.message, 'error');
         return;
       }
 
+      logger.info('Received response from content script: ' + JSON.stringify(response));
       if (response && response.url) {
         logger.info('Navigating to previous chapter: ' + response.url);
         chrome.tabs.update(tabs[0].id, { url: response.url });
       } else {
+        logger.warn('No URL in response');
         updateStatus('No previous chapter available', 'error');
       }
     });
