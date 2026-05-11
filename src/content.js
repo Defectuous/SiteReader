@@ -232,6 +232,9 @@ function handlePopupMessage(request, sender, sendResponse) {
   logger.info(`Received command: ${request.type}`);
 
   switch (request.type) {
+    case 'GET_PAGE_TITLE':
+      sendResponse({ title: getPageTitle() });
+      break;
     case 'PLAY_COMMAND':
       playAudio();
       sendResponse({ success: true, state: 'playing' });
@@ -428,9 +431,22 @@ function updatePopupUI() {
 }
 
 /**
- * Restore reading position from storage
+ * Get page title from og:title meta tag
  */
-function restoreReadingPosition() {
+function getPageTitle() {
+  const ogTitle = document.querySelector('meta[property="og:title"]');
+  if (ogTitle && ogTitle.content) {
+    return ogTitle.content.trim();
+  }
+  
+  // Fallback to regular title tag
+  const titleTag = document.querySelector('title');
+  if (titleTag && titleTag.textContent) {
+    return titleTag.textContent.trim();
+  }
+  
+  return document.title || 'Unknown Page';
+}
   const url = window.location.href;
   chrome.runtime.sendMessage(
     { type: 'GET_READING_POSITION', url: url },

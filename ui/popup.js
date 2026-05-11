@@ -25,6 +25,7 @@ const elements = {
   prevBtn: document.getElementById('prevBtn'),
   restartBtn: document.getElementById('restartBtn'),
   logsBtn: document.getElementById('logsBtn'),
+  pageTitle: document.getElementById('pageTitle'),
   chapterTitle: document.getElementById('chapterTitle'),
   chapterCount: document.getElementById('chapterCount'),
   totalChapters: document.getElementById('totalChapters'),
@@ -47,8 +48,34 @@ function initializePopup() {
   logger.info('Popup initialized');
   
   attachEventListeners();
+  loadPageTitle();
   loadInitialState();
   loadSettings();
+}
+
+/**
+ * Load and display page title from og:title meta tag
+ */
+function loadPageTitle() {
+  chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+    if (!tabs[0]) {
+      elements.pageTitle.textContent = 'No active page';
+      return;
+    }
+
+    chrome.tabs.sendMessage(tabs[0].id, { type: 'GET_PAGE_TITLE' }, (response) => {
+      if (chrome.runtime.lastError) {
+        logger.warn('Could not get page title: ' + chrome.runtime.lastError.message);
+        elements.pageTitle.textContent = tabs[0].title || 'Unknown Page';
+        return;
+      }
+
+      if (response && response.title) {
+        elements.pageTitle.textContent = response.title;
+        logger.info('Page title: ' + response.title);
+      }
+    });
+  });
 }
 
 /**
