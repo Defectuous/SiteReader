@@ -3,8 +3,15 @@
  * Extracts text from web pages, handles TTS playback, and manages chapter navigation
  */
 
-// Inject logger
-const logger = new SiteReaderLogger('content');
+// Initialize logger (created globally by logger.js before this script loads)
+const logger = window.logger || {
+  info: console.log,
+  warn: console.warn,
+  error: console.error,
+  debug: console.debug,
+};
+
+logger.info('Content script initialized for URL: ' + document.location.href);
 
 // Global state
 let pageState = {
@@ -21,8 +28,6 @@ let pageState = {
  * Initialize content script
  */
 function initializeContentScript() {
-  logger.info('Content script initialized for URL: ' + document.location.href);
-  
   // Extract chapters/articles from the page
   extractPageContent();
   
