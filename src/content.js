@@ -83,12 +83,19 @@ function extractPageContent() {
 
 /**
  * Royal Road specific extraction
+ * Target: https://www.royalroad.com/
+ * Primary selectors: .chapter-inner.chapter-content
  */
 function extractFromRoyalRoad() {
   const chapters = [];
   
-  // Royal Road uses specific class for chapter content
-  const contentDivs = document.querySelectorAll('[property="articleBody"], .fiction-text');
+  // Royal Road primary selector (most reliable)
+  let contentDivs = document.querySelectorAll('.chapter-inner.chapter-content');
+  
+  // Fallback to alternate selectors if primary not found
+  if (contentDivs.length === 0) {
+    contentDivs = document.querySelectorAll('[property="articleBody"], .fiction-text');
+  }
   
   contentDivs.forEach((div) => {
     const text = div.innerText?.trim();
@@ -101,6 +108,7 @@ function extractFromRoyalRoad() {
     }
   });
 
+  logger.debug('Royal Road extraction', { chaptersFound: chapters.length, selector: contentDivs.length > 0 ? 'primary' : 'fallback' });
   return chapters;
 }
 
