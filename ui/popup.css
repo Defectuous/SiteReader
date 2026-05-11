@@ -163,7 +163,6 @@ body {
 .control-btn.primary {
   background: #667eea;
   color: white;
-  grid-column: 2 / 5;
 }
 
 .control-btn.primary:hover {
