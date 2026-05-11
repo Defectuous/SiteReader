@@ -12,8 +12,6 @@ let uiState = {
   isPlaying: false,
   isPaused: false,
   speechRate: 1.0,
-  pitch: 1.0,
-  volume: 1.0,
 };
 
 // DOM References
@@ -30,10 +28,6 @@ const elements = {
   statusIndicator: document.getElementById('statusIndicator'),
   rateSlider: document.getElementById('rateSlider'),
   rateValue: document.getElementById('rateValue'),
-  pitchSlider: document.getElementById('pitchSlider'),
-  pitchValue: document.getElementById('pitchValue'),
-  volumeSlider: document.getElementById('volumeSlider'),
-  volumeValue: document.getElementById('volumeValue'),
 };
 
 /**
@@ -102,20 +96,6 @@ function attachEventListeners() {
   elements.rateSlider.addEventListener('input', (e) => {
     uiState.speechRate = parseFloat(e.target.value);
     elements.rateValue.textContent = uiState.speechRate.toFixed(1) + 'x';
-    saveSettings();
-    updateSpeechSettings();
-  });
-
-  elements.pitchSlider.addEventListener('input', (e) => {
-    uiState.pitch = parseFloat(e.target.value);
-    elements.pitchValue.textContent = uiState.pitch.toFixed(1) + 'x';
-    saveSettings();
-    updateSpeechSettings();
-  });
-
-  elements.volumeSlider.addEventListener('input', (e) => {
-    uiState.volume = parseFloat(e.target.value);
-    elements.volumeValue.textContent = Math.round(uiState.volume * 100) + '%';
     saveSettings();
     updateSpeechSettings();
   });
@@ -286,8 +266,6 @@ function updateSpeechSettings() {
       type: 'UPDATE_SPEECH_SETTINGS',
       payload: {
         rate: uiState.speechRate,
-        pitch: uiState.pitch,
-        volume: uiState.volume,
       }
     }).catch(err => {
       logger.debug('Could not update speech settings: ' + err.message);
@@ -309,18 +287,6 @@ function loadSettings() {
         elements.rateValue.textContent = settings.speechRate.toFixed(1) + 'x';
       }
       
-      if (settings.pitch) {
-        uiState.pitch = settings.pitch;
-        elements.pitchSlider.value = settings.pitch;
-        elements.pitchValue.textContent = settings.pitch.toFixed(1) + 'x';
-      }
-      
-      if (settings.volume !== undefined) {
-        uiState.volume = settings.volume;
-        elements.volumeSlider.value = settings.volume;
-        elements.volumeValue.textContent = Math.round(settings.volume * 100) + '%';
-      }
-      
       logger.info('Settings loaded from storage');
     }
   });
@@ -333,8 +299,6 @@ function saveSettings() {
   chrome.storage.local.set({
     siteReaderSettings: {
       speechRate: uiState.speechRate,
-      pitch: uiState.pitch,
-      volume: uiState.volume,
     }
   }, () => {
     logger.info('Settings saved');
