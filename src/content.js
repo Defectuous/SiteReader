@@ -457,26 +457,28 @@ function getNextChapterLink() {
     return link.href;
   }
   
-  // Royal Road specific selectors
-  link = document.querySelector('a[href*="/chapter/"]:has-text("Next Chapter")');
-  if (!link) {
-    link = document.querySelector('a.btn-primary:contains("Next")');
+  // Royal Road specific selectors - look for navigation buttons
+  const allLinks = document.querySelectorAll('a[href*="/chapter/"]');
+  for (const a of allLinks) {
+    const text = a.textContent.toLowerCase().trim();
+    if (text === 'next chapter' || text === 'next' || text.includes('next chapter')) {
+      logger.info('Found next chapter via Royal Road selector');
+      return a.href;
+    }
   }
   
-  // Generic selectors
-  if (!link) {
-    const allLinks = document.querySelectorAll('a');
-    for (const a of allLinks) {
-      const text = a.textContent.toLowerCase();
-      if (text.includes('next') && text.includes('chapter')) {
-        logger.info('Found next chapter via text match');
-        return a.href;
-      }
+  // Generic selectors - look for any next link
+  const allPageLinks = document.querySelectorAll('a');
+  for (const a of allPageLinks) {
+    const text = a.textContent.toLowerCase().trim();
+    if (text.includes('next') && text.includes('chapter')) {
+      logger.info('Found next chapter via text match');
+      return a.href;
     }
   }
   
   logger.warn('No next chapter link found');
-  return link ? link.href : null;
+  return null;
 }
 
 /**
@@ -490,26 +492,28 @@ function getPreviousChapterLink() {
     return link.href;
   }
   
-  // Royal Road specific selectors
-  link = document.querySelector('a[href*="/chapter/"]:has-text("Previous Chapter")');
-  if (!link) {
-    link = document.querySelector('a.btn-primary:contains("Previous")');
+  // Royal Road specific selectors - look for navigation buttons
+  const allLinks = document.querySelectorAll('a[href*="/chapter/"]');
+  for (const a of allLinks) {
+    const text = a.textContent.toLowerCase().trim();
+    if (text === 'previous chapter' || text === 'previous' || text.includes('previous chapter')) {
+      logger.info('Found previous chapter via Royal Road selector');
+      return a.href;
+    }
   }
   
-  // Generic selectors
-  if (!link) {
-    const allLinks = document.querySelectorAll('a');
-    for (const a of allLinks) {
-      const text = a.textContent.toLowerCase();
-      if (text.includes('previous') && text.includes('chapter')) {
-        logger.info('Found previous chapter via text match');
-        return a.href;
-      }
+  // Generic selectors - look for any previous link
+  const allPageLinks = document.querySelectorAll('a');
+  for (const a of allPageLinks) {
+    const text = a.textContent.toLowerCase().trim();
+    if (text.includes('previous') && text.includes('chapter')) {
+      logger.info('Found previous chapter via text match');
+      return a.href;
     }
   }
   
   logger.warn('No previous chapter link found');
-  return link ? link.href : null;
+  return null;
 }
 
 /**
